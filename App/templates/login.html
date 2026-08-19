@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — DocClassify</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+</head>
+<body>
+
+  <!-- ===== LEFT PANEL ===== -->
+  <div class="left-panel">
+
+ 
+      <!-- Logo -->
+  <div class="left-logo">
+    <div class="logo-icon"><i class="fa-regular fa-file-lines"></i></div>
+    <div class="logo-text">Doc<span>Classify</span></div>
+  </div>
+ 
+
+    <div class="left-hero">
+      <div class="left-tag">
+        <div class="left-tag-line"></div>
+        Plateforme de classification
+      </div>
+      <h1 class="left-headline">
+        Classifiez vos<br>documents <em>avec</em><br>précision
+      </h1>
+      <p class="left-desc">
+        Analysez, organisez et retrouvez vos fichiers PDF et texte en quelques secondes grâce à notre moteur de classification automatique.
+      </p>
+    </div>
+
+
+
+    <div class="left-dot"></div>
+  </div>
+
+  <!-- ===== RIGHT PANEL ===== -->
+  <div class="right-panel">
+    <div class="form-wrap">
+
+      <div class="form-header">
+        <h2 class="form-title">Bon retour.</h2>
+        <p class="form-sub">Connectez-vous à votre espace DocClassify.</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" action="/login">
+
+        <div class="field">
+          <div class="field-top">
+            <label for="email">Adresse email</label>
+          </div>
+          <input type="email" id="email" name="email"
+                 placeholder="vous@exemple.com" required autocomplete="email">
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="password">Mot de passe</label>
+            <a href="#">Oublié ?</a>
+          </div>
+          <input type="password" id="password" name="password"
+                 placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Se connecter
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+
+      </form>
+
+      <div class="form-footer">
+        Pas encore de compte ?&nbsp;<a href="/register">Créer un compte</a>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

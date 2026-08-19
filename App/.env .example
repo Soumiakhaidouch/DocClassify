@@ -1,0 +1,14 @@
+# Configuration Flask
+SECRET_KEY=<cle_secrete_generee>
+
+# Base de donnees PostgreSQL
+DATABASE_URL=postgresql://<user>:<password>
+                         @localhost:5432/docclassify_db
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=docclassify_db
+DB_USER=<user>
+DB_PASSWORD=<password>
+
+# -- Model depuis hugging face --
+HF_MODEL_ID = soumia-2026/docclassify

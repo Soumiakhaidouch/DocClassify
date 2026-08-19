@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catégories — DocClassify</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #F7F6F3;
+            --surface: #FFFFFF;
+            --border: #EBEBEB;
+            --border-hover: #DEDAD4;
+            --text: #111111;
+            --muted: #6B7280;
+            --orange: #e05e18;
+            --orange-soft: rgba(224, 94, 24, 0.08);
+
+            --culture: #7C3AED;
+            --finance: #059669;
+            --medical: #DC2626;
+            --politics: #D97706;
+            --sports: #2563EB;
+            --tech: #0891B2;
+
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        /* ── Layout ── */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow-y: auto;
+        }
+
+        /* ── Top bar ── */
+        .top-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 28px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 260px;
+            height: 35px;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--orange);
+            background: #fff;
+        }
+
+        .search-box i {
+            color: var(--muted);
+            font-size: .8rem;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-family: inherit;
+            font-size: .85rem;
+            color: var(--text);
+            width: 100%;
+        }
+
+        .search-box input::placeholder {
+            color: #B0BAC9;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            text-decoration: none;
+            transition: background .15s, color .15s;
+            font-size: .9rem;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ── Folders view ── */
+        #folders-view {
+            display: block;
+        }
+
+        #folders-view.hidden {
+            display: none;
+        }
+
+        .categories-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 36px 28px 60px;
+        }
+
+        .page-header {
+            margin-bottom: 36px;
+        }
+
+        .page-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--text);
+            line-height: 1.15;
+            margin-bottom: 5px;
+        }
+
+        .page-sub {
+            font-size: .82rem;
+            color: var(--muted);
+        }
+
+        .section-label {
+            font-size: .68rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        /* ── Category Grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        /* ════════════════════════════════════════
+           ── Folder Card  (inspired by the
+              project-card design in the mockup)
+           ════════════════════════════════════════ */
+        .folder {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 20px 20px 18px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            min-height: 175px;
+            position: relative;
+            opacity: 0;
+            animation: popIn .4s cubic-bezier(.34, 1.4, .64, 1) forwards;
+            transition: transform .2s cubic-bezier(.34, 1.4, .64, 1),
+                        box-shadow .2s ease,
+                        border-color .2s ease;
+        }
+
+        .folder:nth-child(1) { animation-delay: .04s; }
+        .folder:nth-child(2) { animation-delay: .08s; }
+        .folder:nth-child(3) { animation-delay: .12s; }
+        .folder:nth-child(4) { animation-delay: .16s; }
+        .folder:nth-child(5) { animation-delay: .20s; }
+        .folder:nth-child(6) { animation-delay: .24s; }
+
+        .folder:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .07);
+            border-color: var(--border-hover);
+        }
+
+        .folder:active {
+            transform: scale(.98);
+        }
+
+        .folder.selected {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px var(--orange-soft);
+        }
+
+        /* ── Card Header Row ── */
+        .folder-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .folder-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -.02em;
+            line-height: 1.25;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* star + dots cluster */
+        .folder-actions {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
+        .folder-star-btn,
+        .folder-dots-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 5px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background .12s;
+        }
+
+        .folder-star-btn:hover,
+        .folder-dots-btn:hover {
+            background: var(--bg);
+        }
+
+        .folder-star-btn i {
+            font-size: .82rem;
+            color: #F59E0B;   /* gold star */
+        }
+
+        .folder-dots-btn i {
+            font-size: .8rem;
+            color: #B0BAC9;
+        }
+
+        /* ── "by …" subtitle ── */
+        .folder-by {
+            font-size: .72rem;
+            color: #9CA3AF;
+            margin-bottom: 11px;
+            font-weight: 400;
+        }
+
+        /* ── Description ── */
+        .folder-desc {
+            font-size: .775rem;
+            color: #6B7280;
+            line-height: 1.55;
+            flex: 1;
+            margin-bottom: 18px;
+            margin-top: 31px;
+        }
+
+        /* ── Footer ── */
+        .folder-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .folder-activity {
+            font-size: .7rem;
+            color: #9CA3AF;
+            font-weight: 500;
+        }
+
+        /* ── Category status badges ── */
+        .folder-badge {
+            font-size: .58rem;
+            font-weight: 700;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            padding: 3px 9px;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+
+        .badge-culture  { background: #EDE9FE; color: #7C3AED; }
+        .badge-finance  { background: #D1FAE5; color: #059669; }
+        .badge-medical  { background: #FEE2E2; color: #DC2626; }
+        .badge-politics { background: #FEF3C7; color: #B45309; }
+        .badge-sports   { background: #DBEAFE; color: #2563EB; }
+        .badge-tech     { background: #CFFAFE; color: #0891B2; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(.91) translateY(14px); }
+            to   { opacity: 1; transform: scale(1)   translateY(0);    }
+        }
+
+        /* ════════════════════
+           ── Explorer view ──
+           ════════════════════ */
+        #explorer-view {
+            display: none;
+        }
+
+        #explorer-view.visible {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            animation: fadeUp .2s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0);   }
+        }
+
+        .exp-topbar {
+            background: rgba(255, 255, 255, .92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 28px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .exp-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exp-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 7px;
+            background: #111111;
+            color: #fff;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: inherit;
+            border: none;
+            height: 30px;
+        }
+
+        .exp-back:hover {
+            background: #282828;
+        }
+
+        .exp-back i {
+            font-size: .76rem;
+        }
+
+        .exp-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .82rem;
+            color: var(--muted);
+        }
+
+        .crumb-root {
+            cursor: pointer;
+            transition: color .12s;
+            white-space: nowrap;
+        }
+
+        .crumb-root:hover {
+            color: var(--orange);
+            text-decoration: underline;
+        }
+
+        .crumb-sep {
+            opacity: .3;
+        }
+
+        .crumb-current {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .crumb-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 7px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .exp-count {
+            font-size: .75rem;
+            color: var(--muted);
+            white-space: nowrap;
+            flex-shrink: 0;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 3px 10px;
+            font-weight: 500;
+        }
+
+        .exp-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 8px 16px;
+            width: 240px;
+            flex-shrink: 0;
+            height: 35px;
+        }
+
+        .exp-search:focus-within {
+            border-color: var(--orange);
+            background: #fff;
+        }
+
+        .exp-search i {
+            color: var(--muted);
+            font-size: .82rem;
+        }
+
+        .exp-search input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-family: inherit;
+            font-size: .84rem;
+            color: var(--text);
+            width: 100%;
+        }
+
+        .exp-search input::placeholder {
+            color: #B0BAC9;
+        }
+
+        .exp-topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .exp-body {
+            flex: 1;
+            padding: 32px 28px 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .exp-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .exp-section-title {
+            font-size: .68rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        /* ── File grid ── */
+        .exp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .fcard {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            min-height: 90px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fcard:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+        }
+
+        .fcard.selected {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px var(--orange-soft);
+        }
+
+        .fcard-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            flex-shrink: 0;
+            transition: all 0.25s ease;
+        }
+
+        .fcard-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .fcard-name {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fcard-meta {
+            font-size: .7rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 3px;
+        }
+
+        .fcard-conf {
+            font-size: .65rem;
+            font-weight: 700;
+            color: var(--orange);
+        }
+
+        .exp-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 72px 24px;
+            color: var(--muted);
+        }
+
+        .exp-empty i {
+            font-size: 2rem;
+            opacity: .18;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .exp-empty p {
+            font-size: .88rem;
+            margin-bottom: 20px;
+        }
+
+        .exp-empty a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--orange);
+            color: #fff;
+            border-radius: 7px;
+            padding: 9px 22px;
+            font-weight: 500;
+            font-size: .8rem;
+            text-decoration: none;
+            transition: opacity .15s;
+            height: 50px;
+        }
+
+        .exp-empty a:hover {
+            opacity: .88;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        {% include 'sidebar.html' %}
+
+        <main class="main-content">
+
+            <!-- ── Folders view ── -->
+            <div id="folders-view">
+                <div class="top-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Rechercher une catégorie…">
+                    </div>
+                    <div class="top-bar-right">
+                        <a href="#" class="icon-btn" title="Notifications"><i class=""></i></a>
+                        <a href="#" class="icon-btn" title="Paramètres"><i class=""></i></a>
+                    </div>
+                </div>
+
+                <div class="categories-wrapper">
+                    <div class="page-header">
+                        <div class="page-title">Catégories de Classification</div>
+                        <p class="page-sub">6 catégories disponibles — cliquez pour explorer.</p>
+                    </div>
+
+                    <div class="section-label">Dossiers</div>
+
+                    <script id="docs-data" type="application/json">
+                    {{ docs_by_category | tojson }}
+                </script>
+
+                    <div class="grid">
+                        {% set cats = [
+                        ('culture',  'Culture',   'fa-palette',    'Art, littérature, patrimoine et documents culturels classifiés.', 'CULTURE'),
+                        ('finance',  'Finance',   'fa-chart-line', 'Rapports financiers, bilans comptables et analyses économiques.', 'FINANCE'),
+                        ('medical',  'Médical',   'fa-heartbeat',  'Dossiers médicaux, ordonnances et comptes rendus cliniques.', 'MÉDICAL'),
+                        ('politics', 'Politique', 'fa-landmark',   'Documents officiels, discours politiques et textes législatifs.', 'POLITIQUE'),
+                        ('sports',   'Sports',    'fa-futbol',     'Actualités sportives, résultats de matchs et analyses de performance.', 'SPORTS'),
+                        ('tech',     'Tech',      'fa-microchip',  'Articles technologiques, documentation et rapports d\'innovation.', 'TECH'),
+                        ] %}
+
+                        {% for slug, label, icon, desc, badge in cats %}
+                        {% set n = counts.get(slug, 0) %}
+                        <div class="folder folder-{{ slug }}" onclick="openPanel('{{ slug }}', '{{ label }}')"
+                            data-slug="{{ slug }}">
+
+                            <!-- Header: title + star + dots -->
+                            <div class="folder-header">
+                                <div class="folder-label">{{ label }}</div>
+                              
+                            </div>
+
+                            <!-- Description -->
+                            <div class="folder-desc">{{ desc }}</div>
+
+                            <!-- Footer: count + badge -->
+                            <div class="folder-footer">
+                                <span class="folder-activity">
+                                    {% if n == 0 %}Vide
+                                    {% elif n == 1 %}1 document
+                                    {% else %}{{ n }} documents{% endif %}
+                                </span>
+                                <span class="folder-badge badge-{{ slug }}">{{ badge }}</span>
+                            </div>
+
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Explorer view ── -->
+            <div id="explorer-view">
+                <div class="exp-topbar">
+                    <div class="exp-topbar-left">
+                        <button class="exp-back" onclick="closeExplorer()">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </button>
+                        <div class="exp-breadcrumb">
+                            <span class="crumb-root" onclick="closeExplorer()">Documents</span>
+                            <span class="crumb-sep">/</span>
+                            <span class="crumb-current">
+                                <span class="crumb-dot" id="exp-crumb-dot"></span>
+                                <span id="exp-crumb-label">—</span>
+                            </span>
+                        </div>
+                        <span class="exp-count" id="exp-file-count"></span>
+                    </div>
+                    <div class="exp-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="exp-search-input" placeholder="Rechercher dans ce dossier…">
+                    </div>
+                    <div class="exp-topbar-right">
+                        <a href="#" class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></a>
+                        <a href="#" class="icon-btn" title="Paramètres"><i class="fas fa-cog"></i></a>
+                    </div>
+                </div>
+
+                <div class="exp-body">
+                    <div class="exp-section-header">
+                        <div class="exp-section-title">Fichiers</div>
+                    </div>
+                    <div class="exp-grid" id="exp-grid"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const ALL_DOCS = JSON.parse(document.getElementById('docs-data').textContent);
+
+        let currentSlug = null;
+        let currentLabel = null;
+
+        const CAT_COLORS = {
+            culture:  '#7C3AED',
+            finance:  '#059669',
+            medical:  '#DC2626',
+            politics: '#D97706',
+            sports:   '#2563EB',
+            tech:     '#0891B2',
+        };
+
+        const FILE_ICONS = {
+            pdf:  { fa: 'fa-file-pdf',  bg: '#FEF2F2', ic: '#DC2626' },
+            docx: { fa: 'fa-file-word', bg: '#EFF6FF', ic: '#2563EB' },
+            doc:  { fa: 'fa-file-word', bg: '#EFF6FF', ic: '#2563EB' },
+            txt:  { fa: 'fa-file-alt',  bg: '#F0FDF4', ic: '#059669' },
+            text: { fa: 'fa-keyboard',  bg: '#F0F9FF', ic: '#0284C7' },
+        };
+
+        function openPanel(slug, label) {
+            currentSlug  = slug;
+            currentLabel = label;
+
+            document.getElementById('exp-crumb-dot').style.background = CAT_COLORS[slug] || '#8896A8';
+            document.getElementById('exp-crumb-label').textContent = label;
+            document.getElementById('exp-search-input').value = '';
+
+            renderFiles(ALL_DOCS[slug] || []);
+
+            document.getElementById('folders-view').classList.add('hidden');
+            document.getElementById('explorer-view').classList.add('visible');
+            document.querySelector('.main-content').scrollTop = 0;
+            window.scrollTo(0, 0);
+        }
+
+        function closeExplorer() {
+            document.getElementById('explorer-view').classList.remove('visible');
+            document.getElementById('folders-view').classList.remove('hidden');
+
+            if (currentSlug) {
+                const el = document.querySelector(`.folder[data-slug="${currentSlug}"]`);
+                if (el) {
+                    el.classList.add('selected');
+                    setTimeout(() => el.classList.remove('selected'), 700);
+                }
+            }
+            currentSlug = null;
+        }
+
+        document.getElementById('exp-search-input').addEventListener('input', function () {
+            if (!currentSlug) return;
+            const q = this.value.toLowerCase();
+            const docs = (ALL_DOCS[currentSlug] || []).filter(d =>
+                d.file_name.toLowerCase().includes(q)
+            );
+            renderFiles(docs);
+        });
+
+        function renderFiles(docs) {
+            const grid  = document.getElementById('exp-grid');
+            const count = document.getElementById('exp-file-count');
+
+            count.textContent = docs.length === 0 ? 'Vide'
+                : docs.length === 1 ? '1 élément'
+                : `${docs.length} éléments`;
+
+            if (!docs.length) {
+                grid.innerHTML = `<div class="exp-empty">
+                    <i class="fas fa-folder-open"></i>
+                    <p>Ce dossier ne contient aucun document classifié.</p>
+                    <a href="/">Classifier un document</a>
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = docs.map(d => {
+                const ft  = (d.file_type || 'text').toLowerCase();
+                const fi  = FILE_ICONS[ft] || { fa: 'fa-file', bg: '#F0F2F6', ic: '#8896A8' };
+                const sizeKo = d.char_count ? (d.char_count / 1024).toFixed(1) + ' Ko' : '—';
+                const conf   = d.confidence ? Math.round(d.confidence * 100) + '%' : null;
+
+                return `<div class="fcard" onclick="this.classList.toggle('selected')">
+                    <div class="fcard-icon" style="background:${fi.bg};">
+                        <i class="fas ${fi.fa}" style="color:${fi.ic};"></i>
+                    </div>
+                    <div class="fcard-info">
+                        <div class="fcard-name" title="${d.file_name}">${d.file_name}</div>
+                        <div class="fcard-meta">
+                            <span>${sizeKo}</span>
+                            ${conf ? `<span class="fcard-conf">${conf}</span>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeExplorer(); });
+    </script>
+
+</body>
+
+</html>
