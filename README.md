@@ -1,8 +1,7 @@
 # DocClassify
 
-Système de classification automatique de documents textuels bilingues (arabe / français), développé dans le cadre du Master D3SI (Data Science et Sécurité des Systèmes d'Information) — Faculté Polydisciplinaire de Béni Mellal, Université Sultan Moulay Slimane.
-
-
+Système de classification automatique de documents textuels bilingues (arabe / français).
+**Catégories :** culture · finance · medical · politics · sports · tech.
 
 ## Prérequis
 
