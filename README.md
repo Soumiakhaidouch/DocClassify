@@ -31,8 +31,21 @@ Système de classification automatique de documents textuels bilingues (arabe / 
    ```bash
    pip install -r requirements.txt
    ```
+Créer la base de données PostgreSQL Créer une base de données puis importer le schéma fourni dans docclassify_db.sql :
+bash
+   createdb docclassify_db
+   psql -d docclassify_db -f docclassify_db.sql
 
-4. **Lancer l'application**
+4. **Créer la base de données PostgreSQL**
+   Créer une base de données puis importer le schéma fourni dans `App/docclassify_db.sql` :
+```bash
+   createdb docclassify_db
+   psql -d docclassify_db -f docclassify_db.sql
+```
+ 
+   Configurer ensuite les identifiants de connexion à la base de données (variables d'environnement ou fichier de configuration de l'application, selon `App/`).
+
+5. **Lancer l'application**
 
    ```bash
    cd App
