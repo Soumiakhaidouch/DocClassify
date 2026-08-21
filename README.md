@@ -14,6 +14,7 @@ Système de classification automatique de documents textuels bilingues (arabe / 
 1. **Cloner le dépôt**
 
    ```bash
+   git init
    git clone <url-du-depot>
    cd DocClassify\App
    ```
