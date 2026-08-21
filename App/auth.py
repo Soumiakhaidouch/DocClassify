@@ -10,11 +10,13 @@ auth = Blueprint("auth", __name__)
 # Paramètres lus depuis les variables d'environnement (.env).
 # Le chargement du .env se fait une seule fois, au démarrage, dans app.py.
 DB_CONFIG = {
-    "host":     os.environ.get("DB_HOST", "localhost"),
-    "port":     int(os.environ.get("DB_PORT", 5432)),
-    "dbname":   os.environ.get("DB_NAME", "docclassify"),
-    "user":     os.environ.get("DB_USER", "postgres"),
-    "password": os.environ.get("DB_PASSWORD", ""),
+
+    "host":     os.environ.get("DB_HOST"),
+    "port":     int(os.environ.get("DB_PORT")),
+    "dbname":   os.environ.get("DB_NAME"),
+    "user":     os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+
 }
 
 def get_db():
