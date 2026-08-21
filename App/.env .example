@@ -1,9 +1,7 @@
 # Configuration Flask
 SECRET_KEY=<cle_secrete_generee>
 
-# Base de donnees PostgreSQL
-DATABASE_URL=postgresql://<user>:<password>
-                         @localhost:5432/docclassify_db
+# Base de données PostgreSQL
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=docclassify_db
