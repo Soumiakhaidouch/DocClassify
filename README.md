@@ -15,7 +15,7 @@ Système de classification automatique de documents textuels bilingues (arabe / 
 
    ```bash
    git clone <url-du-depot>
-   cd DocClassify
+   cd App
    ```
 
 2. **Créer un environnement virtuel**
